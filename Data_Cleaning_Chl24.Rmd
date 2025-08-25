@@ -1,0 +1,30 @@
+---
+title: "Data cleaning - chl 2024"
+output: html_document
+date: "2025-08-25"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+#prep data
+library(readxl)
+library(tidyverse)
+library(dplyr)
+library(plotrix)
+library(lubridate)
+Chl24Data <- read_excel("2024_chlorophyll.xlsx") # you will have to change the directory to where you saved the file, then you should be able to upload
+as.Date(Chl24Data$Date, format="%Y-%m-%d")
+Chl24Data$month <- format(Chl24Data$Date, '%m')
+
+Chl24Data <- Chl24Data %>%
+  mutate(cape = case_when(
+   SiteCode %in% c('FC', 'BB') ~ 'Foulweather',   # Assign 'Foulweather' for FC and BB
+    SiteCode %in% c('SH', 'YB', 'TK') ~ 'Perpetua', # Assign 'Perpetua' for SH, YB, and TK
+   SiteCode %in% c('CB', 'RP') ~ 'Blanco',        # Assign 'Blanco' for CB and RP
+    TRUE ~ 'Unknown'                           # For any other site, assign 'Unknown'
+  ))
+```
+
