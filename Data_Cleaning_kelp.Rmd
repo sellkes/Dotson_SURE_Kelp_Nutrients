@@ -1,0 +1,40 @@
+---
+title: "Data Cleaning - Kelp"
+output: html_document
+date: "2025-08-25"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+#prep data
+library(readxl)
+library(tidyverse)
+library(dplyr)
+library(plotrix)
+library(lubridate)
+MasterData <- read_excel("Master_Data_Sheet_KRC.xlsx") # you will have to change the directory to where you saved the file, then you should be able to upload
+as.Date(MasterData$Date, format="%Y-%d-%m")
+MasterData$Julian_date <- yday(MasterData$Date)
+MasterData$month <- format(MasterData$Date, '%m')
+names(MasterData)[2] <- 'site'
+names(MasterData)[7] <- 'recruits'
+names(MasterData)[8] <- 'tide'
+names(MasterData)[4] <- 'transect'
+MasterData$PlotID <- paste(MasterData$site, MasterData$transect, MasterData$`Meter #`, sep = ".")
+
+Transect_Avg <- MasterData %>%
+  group_by(Date, site, Species, transect) %>%
+  summarise(average_value = mean(recruits))
+
+Transect_Avg <- Transect_Avg %>%
+  mutate(cape = case_when(
+    site %in% c('FC', 'BB') ~ 'Foulweather',   # Assign 'Foulweather' for FC and BB
+    site %in% c('SH', 'YB', 'TK') ~ 'Perpetua', # Assign 'Perpetua' for SH, YB, and TK
+    site %in% c('CB', 'RP') ~ 'Blanco',        # Assign 'Blanco' for CB and RP
+    TRUE ~ 'Unknown'                           # For any other site, assign 'Unknown'
+  ))
+```
+
