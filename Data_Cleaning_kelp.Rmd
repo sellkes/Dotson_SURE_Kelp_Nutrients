@@ -15,7 +15,7 @@ library(tidyverse)
 library(dplyr)
 library(plotrix)
 library(lubridate)
-MasterData <- read_excel("Master_Data_Sheet_KRC.xlsx") # you will have to change the directory to where you saved the file, then you should be able to upload
+MasterData <- read_excel("/Users/sarahsellke/Documents/GitHub/Dotson_SURE_Kelp_Nutrients/Master_Data_Sheet_KRC_1.xlsx") # you will have to change the directory to where you saved the file, then you should be able to upload
 as.Date(MasterData$Date, format="%Y-%d-%m")
 MasterData$Julian_date <- yday(MasterData$Date)
 MasterData$month <- format(MasterData$Date, '%m')
@@ -24,10 +24,15 @@ names(MasterData)[7] <- 'recruits'
 names(MasterData)[8] <- 'tide'
 names(MasterData)[4] <- 'transect'
 MasterData$PlotID <- paste(MasterData$site, MasterData$transect, MasterData$`Meter #`, sep = ".")
+MasterData$month <- format(MasterData$Date, '%m')
+MasterData$YearMonth <- as.yearmon(MasterData$Date)
+MasterData$YearMonthSite <- paste(MasterData$YearMonth, MasterData$site, sep="_")
 
 Transect_Avg <- MasterData %>%
-  group_by(Date, site, Species, transect) %>%
+  group_by(YearMonth, site, Species) %>%
   summarise(average_value = mean(recruits))
+
+Transect_Avg$YearMonthSite <- paste(Transect_Avg$YearMonth, Transect_Avg$site, sep="_")
 
 Transect_Avg <- Transect_Avg %>%
   mutate(cape = case_when(
@@ -36,5 +41,102 @@ Transect_Avg <- Transect_Avg %>%
     site %in% c('CB', 'RP') ~ 'Blanco',        # Assign 'Blanco' for CB and RP
     TRUE ~ 'Unknown'                           # For any other site, assign 'Unknown'
   ))
+
+?write.csv
+#save the transect average dataframe 
+write.csv(Transect_Avg, file = ".//Kelp_Averages_Clean.csv")
 ```
 
+```{r}
+?left_join
+#join dataframes (make sure you've done the chlorophyll one first)
+chlData <- read.csv(".//Chlorophyll_data_24_clean.csv")
+KelpData <- read.csv(".//Kelp_Averages_Clean.csv")
+Combined_Data <- left_join(chlData, KelpData, by = "YearMonthSite" )
+
+```
+```{r}
+Combined_Data_month_average <- MasterData %>%
+  group_by(YearMonth, site, Species, transect) %>%
+  summarise(average_value = mean(recruits))
+```
+
+
+```{r}
+#fake linear regression 
+Hedophyllum <- subset( Combined_Data, Species =='Hedophyllum sessile')
+
+HedoLM <- lm(formula = Hedophyllum$average_value ~ Hedophyllum$Chl.a, na.action = na.omit)
+
+summary (HedoLM)
+
+ggplot(data=Hedophyllum, aes(x=Chl.a, y=average_value, group=1)) +
+  geom_line()+
+  geom_point()
+```
+
+
+```{r}
+
+```
+
+```{r}
+Alaria <- subset( Combined_Data, Species =='Alaria marginata')
+
+AlariaLM <- lm(formula = Alaria$average_value ~ Alaria$Chl.a, na.action = na.omit)
+
+summary(AlariaLM)
+
+ggplot(data=Alaria, aes(x=Chl.a, y=average_value, group=1)) +
+  geom_line()+
+  geom_point()
+```
+
+```{r}
+Postelsia <- subset( Combined_Data, Species =='Postelsia palmaeformis')
+
+PostLM <- lm(formula = Postelsia$average_value ~ Postelsia$Chl.a, na.action = na.omit)
+
+summary(PostLM)
+
+ggplot(data=Postelsia, aes(x=Chl.a, y=average_value, group=1)) +
+  geom_line()+
+  geom_point()
+```
+
+```{r}
+Laminaria <- subset( Combined_Data, Species =='Laminaria sinclairii')
+
+LamLM <- lm(formula = Laminaria$average_value ~ Laminaria$Chl.a, na.action = na.omit)
+
+summary(LamLM)
+
+ggplot(data=Laminaria, aes(x=Chl.a, y=average_value, group=1)) +
+  geom_line()+
+  geom_point()
+```
+
+
+```{r}
+Lessoniopsis <- subset( Combined_Data, Species =='Lessoniopsis littoralis')
+
+LessLM <- lm(formula = Lessoniopsis$average_value ~ Lessoniopsis$Chl.a, na.action = na.omit)
+
+summary(LessLM)
+
+ggplot(data=Lessoniopsis, aes(x=Chl.a, y=average_value, group=1)) +
+  geom_line()+
+  geom_point()
+```
+
+```{r}
+Egregia <- subset( Combined_Data, Species =='Egregia menziesii')
+
+EgrLM <- lm(formula = Egregia$average_value ~ Egregia$Chl.a, na.action = na.omit)
+
+summary(EgrLM)
+
+ggplot(data=Egregia, aes(x=Chl.a, y=average_value, group=1)) +
+  geom_line()+
+  geom_point()
+```

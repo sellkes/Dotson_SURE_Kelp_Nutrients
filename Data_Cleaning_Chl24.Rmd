@@ -18,6 +18,7 @@ library(lubridate)
 Chl24Data <- read_excel("2024_chlorophyll.xlsx") # you will have to change the directory to where you saved the file, then you should be able to upload
 as.Date(Chl24Data$Date, format="%Y-%m-%d")
 Chl24Data$month <- format(Chl24Data$Date, '%m')
+Chl24Data$YearMonth <- as.yearmon(Chl24Data$Date)
 
 Chl24Data <- Chl24Data %>%
   mutate(cape = case_when(
@@ -26,5 +27,12 @@ Chl24Data <- Chl24Data %>%
    SiteCode %in% c('CB', 'RP') ~ 'Blanco',        # Assign 'Blanco' for CB and RP
     TRUE ~ 'Unknown'                           # For any other site, assign 'Unknown'
   ))
+
+Columns <- c(1:4, 10, 11)
+Chl24DataClean <- Chl24Data[,Columns]
+
+Chl24DataClean$YearMonthSite <- paste(Chl24DataClean$YearMonth, Chl24DataClean$SiteCode, sep="_")
+
+write.csv(Chl24DataClean, file = ".//Chlorophyll_data_24_clean.csv")
 ```
 
