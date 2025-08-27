@@ -15,7 +15,8 @@ library(tidyverse)
 library(dplyr)
 library(plotrix)
 library(lubridate)
-MasterData <- read_excel("/Users/sarahsellke/Documents/GitHub/Dotson_SURE_Kelp_Nutrients/Master_Data_Sheet_KRC_1.xlsx") # you will have to change the directory to where you saved the file, then you should be able to upload
+library(zoo)
+MasterData <- read_excel("C:/Users/sellkes/Documents/GitHub/Dotson_SURE_Kelp_Nutrients/Data/Master_Data_Sheet_KRC_1.xlsx") # you will have to change the directory to where you saved the file, then you should be able to upload
 as.Date(MasterData$Date, format="%Y-%d-%m")
 MasterData$Julian_date <- yday(MasterData$Date)
 MasterData$month <- format(MasterData$Date, '%m')
@@ -50,7 +51,7 @@ write.csv(Transect_Avg, file = ".//Kelp_Averages_Clean.csv")
 ```{r}
 ?left_join
 #join dataframes (make sure you've done the chlorophyll one first)
-chlData <- read.csv(".//Chlorophyll_data_24_clean.csv")
+chlData <- read.csv(".//Chlorophyll_data_fieldfluro_clean.csv")
 KelpData <- read.csv(".//Kelp_Averages_Clean.csv")
 Combined_Data <- left_join(chlData, KelpData, by = "YearMonthSite" )
 

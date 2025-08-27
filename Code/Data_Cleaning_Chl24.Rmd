@@ -15,10 +15,13 @@ library(tidyverse)
 library(dplyr)
 library(plotrix)
 library(lubridate)
-Chl24Data <- read_excel("2024_chlorophyll.xlsx") # you will have to change the directory to where you saved the file, then you should be able to upload
+library(zoo)
+Chl24Data <- read_excel(".//Chl-a_Field_2024_2025-08-26_CEG.xlsx") # you will have to change the directory to where you saved the file, then you should be able to upload
 as.Date(Chl24Data$Date, format="%Y-%m-%d")
 Chl24Data$month <- format(Chl24Data$Date, '%m')
 Chl24Data$YearMonth <- as.yearmon(Chl24Data$Date)
+names(Chl24Data)[4] <- 'chlorophyll'
+
 
 Chl24Data <- Chl24Data %>%
   mutate(cape = case_when(
@@ -28,11 +31,13 @@ Chl24Data <- Chl24Data %>%
     TRUE ~ 'Unknown'                           # For any other site, assign 'Unknown'
   ))
 
-Columns <- c(1:4, 10, 11)
-Chl24DataClean <- Chl24Data[,Columns]
+Chl24DataAverages <- Chl24Data %>%
+  group_by(YearMonth, SiteCode) %>%
+  summarise(average_chl = mean(chlorophyll))
 
-Chl24DataClean$YearMonthSite <- paste(Chl24DataClean$YearMonth, Chl24DataClean$SiteCode, sep="_")
 
-write.csv(Chl24DataClean, file = ".//Chlorophyll_data_24_clean.csv")
+Chl24DataAverages$YearMonthSite <- paste(Chl24DataAverages$YearMonth, Chl24DataAverages$SiteCode, sep="_")
+
+write.csv(Chl24DataAverages, file = "Chlorophyll_data_fieldfluro_clean.csv")
 ```
 
