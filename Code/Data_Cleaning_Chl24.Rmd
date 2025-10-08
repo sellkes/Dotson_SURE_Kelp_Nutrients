@@ -16,7 +16,7 @@ library(dplyr)
 library(plotrix)
 library(lubridate)
 library(zoo)
-Chl24Data <- read_excel(".//Chl-a_Field_2024_2025-08-26_CEG.xlsx") # you will have to change the directory to where you saved the file, then you should be able to upload
+Chl24Data <- read_excel("C:/Users/sellkes/Documents/GitHub/Dotson_SURE_Kelp_Nutrients/Data/Chl-a_Field_2024_2025-08-26_CEG.xlsx") # you will have to change the directory to where you saved the file, then you should be able to upload
 as.Date(Chl24Data$Date, format="%Y-%m-%d")
 Chl24Data$month <- format(Chl24Data$Date, '%m')
 Chl24Data$YearMonth <- as.yearmon(Chl24Data$Date)
@@ -38,6 +38,6 @@ Chl24DataAverages <- Chl24Data %>%
 
 Chl24DataAverages$YearMonthSite <- paste(Chl24DataAverages$YearMonth, Chl24DataAverages$SiteCode, sep="_")
 
-write.csv(Chl24DataAverages, file = "Chlorophyll_data_fieldfluro_clean.csv")
+write.csv(Chl24DataAverages, file = "C:/Users/sellkes/Documents/GitHub/Dotson_SURE_Kelp_Nutrients/Data/Chlorophyll_data_fieldfluro_clean.csv") # you'll also have to fix the folder you're saving to since this is to my computer - i can show you later
 ```
 
