@@ -56,6 +56,8 @@ KelpData <- read.csv(".//Kelp_Averages_Clean.csv")
 Combined_Data <- left_join(chlData, KelpData, by = "YearMonthSite" )
 
 ```
+
+
 ```{r}
 Combined_Data_month_average <- MasterData %>%
   group_by(YearMonth, site, Species, transect) %>%
