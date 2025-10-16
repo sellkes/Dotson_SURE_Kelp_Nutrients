@@ -17,10 +17,14 @@ library(plotrix)
 library(lubridate)
 library(zoo)
 Chl24Data <- read_excel("C:/Users/sellkes/Documents/GitHub/Dotson_SURE_Kelp_Nutrients/Data/Chl-a_Field_2024_2025-08-26_CEG.xlsx") # you will have to change the directory to where you saved the file, then you should be able to upload
+Chl24Data <- Chl_a_Field_2024_2025_08_26_CEG
 as.Date(Chl24Data$Date, format="%Y-%m-%d")
 Chl24Data$month <- format(Chl24Data$Date, '%m')
 Chl24Data$YearMonth <- as.yearmon(Chl24Data$Date)
 names(Chl24Data)[4] <- 'chlorophyll'
+Chl24Data$Week <- strftime(Chl24Data$Date, format = "%V")
+Chl24Data$year <- format(Chl24Data$Date, '%y')
+
 
 
 Chl24Data <- Chl24Data %>%
@@ -31,12 +35,16 @@ Chl24Data <- Chl24Data %>%
     TRUE ~ 'Unknown'                           # For any other site, assign 'Unknown'
   ))
 
+
+
 Chl24DataAverages <- Chl24Data %>%
   group_by(YearMonth, SiteCode) %>%
-  summarise(average_chl = mean(chlorophyll))
-
+  summarise(average_chl = mean(chlorophyll),
+            Week = Week, cape = cape, year =year)
 
 Chl24DataAverages$YearMonthSite <- paste(Chl24DataAverages$YearMonth, Chl24DataAverages$SiteCode, sep="_")
+Chl24DataAverages$WeekYearSite <- paste(Chl24DataAverages$Week, Chl24DataAverages$year, Chl24DataAverages$SiteCode, sep="_")
+
 
 write.csv(Chl24DataAverages, file = "C:/Users/sellkes/Documents/GitHub/Dotson_SURE_Kelp_Nutrients/Data/Chlorophyll_data_fieldfluro_clean.csv") # you'll also have to fix the folder you're saving to since this is to my computer - i can show you later
 ```

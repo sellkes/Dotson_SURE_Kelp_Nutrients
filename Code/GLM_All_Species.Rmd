@@ -1,0 +1,26 @@
+---
+title: "GLM_All_Species"
+output: html_document
+date: "2025-10-15"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r}
+#load Data
+ Monthly <- Kelp_Chl_Monthly <- read.csv("~/GitHub/Dotson_SURE_Kelp_Nutrients/Code/Kelp_Chl_Monthly.csv")
+Weekly <- Kelp_Chl_Weekly <- read.csv("~/GitHub/Dotson_SURE_Kelp_Nutrients/Code/Kelp_Chl_Weekly.csv")
+
+```
+
+```{r}
+library(mgcv)
+class(Monthly$Week)
+monthly_all_sp <- gam(average_value ~ average_chl + Species + Cape.x + YearMonth.x + (1|site:cape.x), data = Monthly, family = tw(link = "log"))
+?gam
+
+```
+
